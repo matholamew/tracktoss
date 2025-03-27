@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js'
-import QRCode from 'qrcode'
-import jsQR from 'jsqr'
+import QRCode from '/node_modules/qrcode/lib/browser.js'
+import jsQR from '/node_modules/jsqr/dist/jsQR.js'
 import { musicService } from './music-services.js'
 
 // DOM Elements

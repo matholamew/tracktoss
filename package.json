@@ -12,7 +12,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.3",
     "jsqr": "^1.4.0",
-    "qrcode": "^1.5.3"
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.17",
@@ -20,4 +20,4 @@
     "tailwindcss": "^3.4.1",
     "vite": "^5.1.0"
   }
-} 
+}

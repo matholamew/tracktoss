@@ -8,11 +8,17 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="/src/styles/main.css">
     <script type="module" src="/scripts/playlist.js"></script>
+    <script>
+        // Ensure proper routing
+        if (!window.location.pathname.startsWith('/playlist/')) {
+            window.location.href = '/';
+        }
+    </script>
 </head>
-<body>
+<body class="bg-gray-100">
     <div class="container">
         <div class="playlist-header">
-            <h1>TrackToss Playlist</h1>
+            <h1 class="text-3xl font-bold">TrackToss Playlist</h1>
             <div id="expiry-info" class="expiry-info"></div>
         </div>
 

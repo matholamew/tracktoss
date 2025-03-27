@@ -5,12 +5,12 @@ import autoprefixer from 'autoprefixer'
 
 export default defineConfig({
   server: {
-    historyApiFallback: true,
-    proxy: {
-      '/playlist': {
-        target: '/',
-        rewrite: (path) => '/src/playlist/playlist.html'
-      }
+    port: 5173,
+    strictPort: true,
+    historyApiFallback: {
+      rewrites: [
+        { from: /^\/playlist\/.*/, to: '/src/playlist/playlist.html' }
+      ]
     }
   },
   build: {
@@ -19,7 +19,8 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         playlist: resolve(__dirname, 'src/playlist/playlist.html')
       }
-    }
+    },
+    outDir: 'dist'
   },
   css: {
     postcss: {
@@ -35,9 +36,9 @@ export default defineConfig({
       '@scripts': resolve(__dirname, 'public/scripts')
     }
   },
-  publicDir: 'public',
-  base: '/',
   optimizeDeps: {
-    exclude: ['jsqr']
-  }
+    include: ['qrcode/lib/browser', 'jsqr/dist/jsQR']
+  },
+  publicDir: 'public',
+  base: '/'
 }) 
