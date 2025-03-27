@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .ios-header {
+    @apply text-2xl font-bold text-gray-900 dark:text-white;
+  }
+
+  .ios-subheader {
+    @apply text-base text-gray-600 dark:text-gray-400;
+  }
+
+  .ios-btn-primary {
+    @apply w-full py-3 px-4 bg-primary text-white font-semibold rounded-ios 
+           shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 
+           focus:ring-primary focus:ring-offset-2 transition-colors;
+  }
+
+  .ios-btn-secondary {
+    @apply w-full py-3 px-4 bg-white text-gray-900 font-semibold rounded-ios 
+           border border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none 
+           focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors;
+  }
+
+  .ios-input {
+    @apply w-full px-4 py-2 bg-gray-100 dark:bg-gray-800 border-0 rounded-ios 
+           text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 
+           focus:ring-primary focus:outline-none;
+  }
+
+  .modal-content {
+    @apply bg-white dark:bg-gray-900 rounded-ios-lg shadow-xl overflow-hidden;
+  }
+
+  .loading-spinner {
+    @apply border-gray-300 border-t-primary;
+  }
+}
+
+/* Custom styles */
+.player-container {
+    @apply my-5 text-center;
+}
+
+.player {
+    @apply mx-auto max-w-2xl w-full aspect-video bg-black;
+}
+
+.player-controls {
+    @apply mt-2.5;
+}
+
+.control-button {
+    @apply bg-[#1db954] text-white border-none px-4 py-2 mx-1.5 rounded 
+           cursor-pointer text-sm hover:bg-[#1ed760] transition-colors;
+}
+
+.loading {
+    @apply text-center py-5 text-lg text-gray-600;
+}
+
+.error {
+    @apply text-center py-5 text-red-600 bg-red-50 rounded my-2.5;
+}
+
+/* Safe area insets for notched devices */
+.safe-area-inset-top {
+    height: env(safe-area-inset-top);
+}
+
+.safe-area-inset-bottom {
+    height: env(safe-area-inset-bottom);
+} 
