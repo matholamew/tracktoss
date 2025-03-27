@@ -8,8 +8,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: 'index.html',
-        playlist: 'src/playlist/[id].html'
+        main: resolve(__dirname, 'index.html'),
+        playlist: resolve(__dirname, 'src/playlist/[id].html')
       }
     }
   },
