@@ -37,7 +37,7 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['qrcode/lib/browser', 'jsqr/dist/jsQR']
+    include: ['qrcode', 'jsqr']
   },
   publicDir: 'public',
   base: '/'
