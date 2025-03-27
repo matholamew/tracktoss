@@ -5,13 +5,19 @@ import autoprefixer from 'autoprefixer'
 
 export default defineConfig({
   server: {
-    historyApiFallback: true
+    historyApiFallback: true,
+    proxy: {
+      '/playlist': {
+        target: '/',
+        rewrite: (path) => '/src/playlist/playlist.html'
+      }
+    }
   },
   build: {
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        playlist: resolve(__dirname, 'src/playlist/[id].html')
+        playlist: resolve(__dirname, 'src/playlist/playlist.html')
       }
     }
   },
