@@ -80,31 +80,58 @@ function createSongElement(song, index) {
             <div class="song-artist">${song.artist}</div>
         </div>
         <div class="song-votes">
-            <span class="upvotes">👍 ${song.upvotes}</span>
-            <span class="downvotes">👎 ${song.downvotes}</span>
+            <button onclick="handleUpvote('${song.id}')" class="vote-btn upvote-btn" aria-label="Upvote">
+                <span class="vote-icon">👍</span>
+                <span class="vote-count">${song.upvotes || 0}</span>
+            </button>
+            <button onclick="handleDownvote('${song.id}')" class="vote-btn downvote-btn" aria-label="Downvote">
+                <span class="vote-icon">👎</span>
+                <span class="vote-count">${song.downvotes || 0}</span>
+            </button>
         </div>
     `
-
     return div
 }
 
 // Make voting functions available globally
 window.handleUpvote = async function(songId) {
     try {
+        const voteButton = document.querySelector(`button[onclick="handleUpvote('${songId}')"]`)
+        if (voteButton) {
+            voteButton.disabled = true
+        }
+        
         const { error } = await supabase.rpc('upvote_song', { song_id: songId })
         if (error) throw error
+        
         await loadPlaylist(playlistId)
     } catch (error) {
         console.error('Error upvoting song:', error)
+        alert('Failed to upvote song. Please try again.')
+    } finally {
+        if (voteButton) {
+            voteButton.disabled = false
+        }
     }
 }
 
 window.handleDownvote = async function(songId) {
     try {
+        const voteButton = document.querySelector(`button[onclick="handleDownvote('${songId}')"]`)
+        if (voteButton) {
+            voteButton.disabled = true
+        }
+        
         const { error } = await supabase.rpc('downvote_song', { song_id: songId })
         if (error) throw error
+        
         await loadPlaylist(playlistId)
     } catch (error) {
         console.error('Error downvoting song:', error)
+        alert('Failed to downvote song. Please try again.')
+    } finally {
+        if (voteButton) {
+            voteButton.disabled = false
+        }
     }
 } 

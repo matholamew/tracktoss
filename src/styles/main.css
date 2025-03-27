@@ -36,6 +36,74 @@
   .loading-spinner {
     @apply border-gray-300 border-t-primary;
   }
+
+  .container {
+    @apply max-w-4xl mx-auto px-4 py-8;
+  }
+
+  .playlist-header {
+    @apply mb-8 text-center;
+  }
+
+  .playlist-header h1 {
+    @apply text-3xl font-bold mb-2;
+  }
+
+  .expiry-info {
+    @apply text-gray-600 text-sm;
+  }
+
+  .playlist-container {
+    @apply bg-white rounded-lg shadow-lg p-6;
+  }
+
+  .song-item {
+    @apply flex justify-between items-center py-4 border-b border-gray-200 last:border-b-0;
+  }
+
+  .song-info {
+    @apply flex-grow;
+  }
+
+  .song-title {
+    @apply text-lg font-semibold;
+  }
+
+  .song-artist {
+    @apply text-gray-600;
+  }
+
+  .song-votes {
+    @apply flex gap-2 items-center;
+  }
+
+  .vote-btn {
+    @apply flex items-center gap-1 px-3 py-2 rounded-full transition-colors duration-200;
+  }
+
+  .upvote-btn {
+    @apply bg-green-100 hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .downvote-btn {
+    @apply bg-red-100 hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .vote-icon {
+    @apply text-lg;
+  }
+
+  .vote-count {
+    @apply font-semibold;
+  }
+
+  .loading {
+    @apply text-center py-8 text-gray-600;
+  }
+
+  .error {
+    @apply text-center py-8 text-red-600;
+  }
 }
 
 /* Custom styles */
