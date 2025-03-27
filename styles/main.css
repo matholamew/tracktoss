@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+:root {
+    --primary: #007AFF;
+    --primary-dark: #0056b3;
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary: #0A84FF;
+        --primary-dark: #0071E3;
+    }
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .ios-btn {
+    @apply px-6 py-3 rounded-xl font-semibold text-base
+           transition-all duration-200
+           min-h-[44px] min-w-[44px]
+           active:scale-[0.98];
+  }
+  
+  .ios-btn-primary {
+    @apply w-full py-3 px-4 rounded-xl font-medium text-white bg-primary hover:bg-primary-dark transition-colors;
+  }
+  
+  .ios-btn-secondary {
+    @apply w-full py-3 px-4 rounded-xl font-medium text-primary bg-white border-2 border-primary hover:bg-gray-50 transition-colors dark:bg-gray-800 dark:text-primary dark:border-primary dark:hover:bg-gray-700;
+  }
+  
+  .ios-input {
+    @apply w-full py-3 px-4 rounded-xl border-2 border-gray-200 focus:border-primary focus:outline-none transition-colors dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:focus:border-primary;
+  }
+
+  .ios-card {
+    @apply bg-white rounded-2xl shadow-sm
+           p-6 space-y-4;
+  }
+
+  .ios-header {
+    @apply text-2xl font-bold text-gray-900 dark:text-white;
+  }
+
+  .ios-subheader {
+    @apply text-base text-gray-600 dark:text-gray-300;
+  }
+
+  .ios-button {
+    @apply flex items-center justify-center py-2 px-4 rounded-xl font-medium transition-colors;
+  }
+
+  .safe-area-inset-top {
+    @apply h-[env(safe-area-inset-top)] bg-gray-50 dark:bg-gray-900;
+  }
+
+  .safe-area-inset-bottom {
+    @apply h-[env(safe-area-inset-bottom)] bg-gray-50 dark:bg-gray-900;
+  }
+
+  .modal-content {
+    @apply bg-white rounded-2xl shadow-lg dark:bg-gray-800;
+  }
+
+  .modal-header {
+    @apply border-b border-gray-200 dark:border-gray-700;
+  }
+
+  .search-result {
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+  }
+
+  .loading-spinner {
+    @apply border-primary border-t-transparent;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal Animations */
+#qrCodeModal {
+  transition: opacity 0.3s ease-out;
+}
+
+#qrCodeModal:not(.hidden) {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+#qrCodeModal > div > div {
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-enter {
+  animation: modalFadeIn 0.2s ease-out, modalSlideIn 0.2s ease-out;
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  body {
+    @apply bg-gray-900 text-white;
+  }
+
+  .container {
+    @apply bg-gray-900;
+  }
+
+  .ios-btn-secondary {
+    @apply border-primary text-primary;
+  }
+
+  .ios-input {
+    @apply bg-gray-800 border-gray-700 text-white;
+  }
+
+  .ios-input::placeholder {
+    @apply text-gray-400;
+  }
+
+  .modal-content {
+    @apply bg-gray-800;
+  }
+
+  .modal-header {
+    @apply border-gray-700;
+  }
+
+  .search-result {
+    @apply hover:bg-gray-700;
+  }
+
+  .loading-spinner {
+    @apply border-primary;
+  }
+} 
