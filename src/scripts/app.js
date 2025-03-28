@@ -408,7 +408,7 @@ window.handleDownvote = handleDownvote
 async function handleStartScanner() {
   try {
     // Create new scanner instance
-    scanner = new Instascan.Scanner({
+    scanner = new window.Instascan.Scanner({
       video: videoElement,
       scanPeriod: 5,
       mirror: false
