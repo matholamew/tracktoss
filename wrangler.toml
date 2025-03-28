@@ -9,4 +9,8 @@ bucket = "./dist"
 command = "npm run build"
 
 [[build.upload]]
-format = "service-worker" 
+format = "service-worker"
+
+[build.upload.rules]
+type = "ESModule"
+fallthrough = true 
