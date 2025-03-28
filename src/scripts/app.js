@@ -188,11 +188,25 @@ async function handleSharePlaylist(playlistId) {
     
     // Check if Web Share API is available
     if (navigator.share) {
-      // Use Web Share API
+      // Get the QR code image data
+      const qrCodeImage = document.getElementById('qrCodeImage')
+      if (!qrCodeImage || !qrCodeImage.src) {
+        throw new Error('QR code not found')
+      }
+
+      // Convert QR code data URL to Blob
+      const response = await fetch(qrCodeImage.src)
+      const blob = await response.blob()
+      
+      // Create a File object from the Blob
+      const qrCodeFile = new File([blob], 'playlist-qr-code.png', { type: 'image/png' })
+      
+      // Use Web Share API with files
       await navigator.share({
         title: 'Join my TrackToss playlist!',
         text: 'Scan this QR code to join my playlist and add your favorite songs.',
-        url: shareUrl
+        url: shareUrl,
+        files: [qrCodeFile]
       })
     } else {
       // Fallback for browsers that don't support Web Share API
