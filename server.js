@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename)
 const app = express()
 
 // Serve static files from the dist directory
-app.use(express.static('dist'))
+app.use(express.static(path.join(__dirname, 'dist')))
 
 // Handle playlist routes
 app.get('/playlist/:id', (req, res) => {
@@ -19,7 +19,7 @@ app.get('/playlist/:id', (req, res) => {
         return res.status(400).send('Invalid playlist ID format')
     }
     
-    // Check if playlist exists in database
+    // Send the playlist page
     res.sendFile(path.join(__dirname, 'dist', 'playlist.html'))
 })
 
