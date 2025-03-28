@@ -38,5 +38,15 @@ export default defineConfig({
     }
   },
   publicDir: 'public',
-  base: '/'
+  base: '/',
+  plugins: [
+    {
+      name: 'html-transform',
+      transformIndexHtml(html) {
+        return html.replace(/<script type="module" src="(.*?)"><\/script>/g, (match, src) => {
+          return `<script type="module" src="${src}"></script>`
+        })
+      }
+    }
+  ]
 }) 

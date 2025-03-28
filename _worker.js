@@ -16,6 +16,11 @@ export default {
         const playlistResponse = await env.ASSETS.fetch(new Request(new URL('/playlist.html', url.origin)))
         if (!playlistResponse.ok) {
           console.error('Failed to fetch playlist.html:', playlistResponse.status)
+          // Try fetching index.html as fallback for SPA routing
+          const indexResponse = await env.ASSETS.fetch(new Request(new URL('/index.html', url.origin)))
+          if (indexResponse.ok) {
+            return indexResponse
+          }
           return new Response('Playlist page not found', { status: 404 })
         }
         return playlistResponse
@@ -31,6 +36,11 @@ export default {
         const playlistsResponse = await env.ASSETS.fetch(new Request(new URL('/playlists.html', url.origin)))
         if (!playlistsResponse.ok) {
           console.error('Failed to fetch playlists.html:', playlistsResponse.status)
+          // Try fetching index.html as fallback for SPA routing
+          const indexResponse = await env.ASSETS.fetch(new Request(new URL('/index.html', url.origin)))
+          if (indexResponse.ok) {
+            return indexResponse
+          }
           return new Response('Playlists page not found', { status: 404 })
         }
         return playlistsResponse
