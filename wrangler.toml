@@ -4,6 +4,8 @@ compatibility_date = "2024-03-28"
 
 [site]
 bucket = "./dist"
+include = ["**/*"]
+exclude = ["node_modules/**/*"]
 
 [build]
 command = "npm run build"

@@ -1,5 +1,5 @@
 import { execSync } from 'child_process'
-import { copyFileSync, existsSync, mkdirSync } from 'fs'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
 // Run Vite build
@@ -20,7 +20,8 @@ if (!existsSync(distDir)) {
 const playlistSrc = join(pagesDir, 'playlist.html')
 const playlistDest = join(distDir, 'playlist.html')
 if (existsSync(playlistSrc)) {
-    copyFileSync(playlistSrc, playlistDest)
+    const content = readFileSync(playlistSrc, 'utf-8')
+    writeFileSync(playlistDest, content)
     console.log('Moved playlist.html to root')
 }
 
@@ -28,8 +29,21 @@ if (existsSync(playlistSrc)) {
 const playlistsSrc = join(pagesDir, 'playlists.html')
 const playlistsDest = join(distDir, 'playlists.html')
 if (existsSync(playlistsSrc)) {
-    copyFileSync(playlistsSrc, playlistsDest)
+    const content = readFileSync(playlistsSrc, 'utf-8')
+    writeFileSync(playlistsDest, content)
     console.log('Moved playlists.html to root')
 }
+
+// Verify files exist in root
+console.log('Verifying files...')
+const files = ['playlist.html', 'playlists.html', 'index.html']
+files.forEach(file => {
+    const path = join(distDir, file)
+    if (existsSync(path)) {
+        console.log(`✓ ${file} exists in root`)
+    } else {
+        console.error(`✗ ${file} not found in root`)
+    }
+})
 
 console.log('Build complete!') 
