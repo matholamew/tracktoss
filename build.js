@@ -23,6 +23,8 @@ if (existsSync(playlistSrc)) {
     const content = readFileSync(playlistSrc, 'utf-8')
     writeFileSync(playlistDest, content)
     console.log('Moved playlist.html to root')
+} else {
+    console.error('playlist.html not found in src/pages')
 }
 
 // Move playlists.html
@@ -32,6 +34,8 @@ if (existsSync(playlistsSrc)) {
     const content = readFileSync(playlistsSrc, 'utf-8')
     writeFileSync(playlistsDest, content)
     console.log('Moved playlists.html to root')
+} else {
+    console.error('playlists.html not found in src/pages')
 }
 
 // Clean up src/pages directory
