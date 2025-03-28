@@ -1,4 +1,4 @@
-import { supabase } from '@scripts/supabase-client.js'
+import { supabase } from './supabase-client.js'
 
 console.log('Playlist.js loaded')
 

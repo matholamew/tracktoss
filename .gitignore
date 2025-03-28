@@ -28,4 +28,7 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
-*.sw? 
+*.sw?
+
+# Public scripts
+public/scripts/config.js 

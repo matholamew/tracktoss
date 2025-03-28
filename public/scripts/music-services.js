@@ -1,9 +1,9 @@
+import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_CLIENT_ID } from './config.js'
+
 // Spotify API Configuration
-const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID
 const SPOTIFY_REDIRECT_URI = `${window.location.origin}/auth/spotify`
 
 // YouTube Music API Configuration
-const YOUTUBE_CLIENT_ID = import.meta.env.VITE_YOUTUBE_CLIENT_ID
 const YOUTUBE_REDIRECT_URI = `${window.location.origin}/auth/youtube`
 
 class MusicService {

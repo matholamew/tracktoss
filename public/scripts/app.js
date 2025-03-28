@@ -1,6 +1,4 @@
-import { supabase } from './supabase.js'
-import QRCode from 'qrcode'
-import jsQR from 'jsqr'
+import { supabase } from './supabase-client.js'
 import { musicService } from './music-services.js'
 
 // DOM Elements
@@ -21,23 +19,7 @@ const noResults = document.getElementById('noResults')
 
 // Event Listeners
 startPlaylistBtn.addEventListener('click', handleStartPlaylist)
-contributePlaylistBtn.addEventListener('click', async () => {
-  try {
-    // Request camera access
-    scannerStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }
-    })
-    
-    videoElement.srcObject = scannerStream
-    scannerContainer.classList.remove('hidden')
-    
-    // Start scanning
-    requestAnimationFrame(scanQRCode)
-  } catch (error) {
-    console.error('Error accessing camera:', error)
-    alert('Unable to access camera. Please make sure you have granted camera permissions.')
-  }
-})
+contributePlaylistBtn.addEventListener('click', handleStartScanner)
 closeModalBtn.addEventListener('click', handleCloseModal)
 closeScannerBtn.addEventListener('click', handleCloseScanner)
 closeSearchModalBtn.addEventListener('click', handleCloseSearchModal)
@@ -114,6 +96,7 @@ function updateAuthUI() {
 // Initialize auth UI
 updateAuthUI()
 
+let scanner = null
 let scannerStream = null
 let currentPlaylistId = null
 
@@ -229,37 +212,15 @@ window.handleSongSelect = async function(songId, title, artist, service) {
 }
 
 function handleCloseScanner() {
+  if (scanner) {
+    scanner.stop();
+    scanner = null;
+  }
   if (scannerStream) {
-    scannerStream.getTracks().forEach(track => track.stop())
-    scannerStream = null
+    scannerStream.getTracks().forEach(track => track.stop());
+    scannerStream = null;
   }
-  scannerContainer.classList.add('hidden')
-}
-
-function scanQRCode() {
-  if (!scannerStream) return
-
-  if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-    const canvas = document.createElement('canvas')
-    canvas.width = videoElement.videoWidth
-    canvas.height = videoElement.videoHeight
-    const context = canvas.getContext('2d')
-    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height)
-    
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
-    const code = jsQR(imageData.data, imageData.width, imageData.height)
-    
-    if (code) {
-      // Stop scanning
-      handleCloseScanner()
-      
-      // Extract playlist ID from URL
-      const playlistId = code.data.split('/').pop()
-      handlePlaylistJoin(playlistId)
-    }
-  }
-  
-  requestAnimationFrame(scanQRCode)
+  scannerContainer.classList.add('hidden');
 }
 
 async function handlePlaylistJoin(playlistId) {
@@ -284,7 +245,9 @@ async function handleSharePlaylist(playlistId) {
   const shareUrl = `${window.location.origin}/playlist/${playlistId}`
   
   try {
+    // Check if Web Share API is available
     if (navigator.share) {
+      // Use Web Share API
       await navigator.share({
         title: 'Join my TrackToss playlist!',
         text: 'Scan this QR code to join my playlist and add your favorite songs.',
@@ -292,16 +255,33 @@ async function handleSharePlaylist(playlistId) {
       })
     } else {
       // Fallback for browsers that don't support Web Share API
-      await navigator.clipboard.writeText(shareUrl)
-      alert('Playlist link copied to clipboard!')
+      // Try to copy to clipboard first
+      try {
+        await navigator.clipboard.writeText(shareUrl)
+        alert('Playlist link copied to clipboard!')
+      } catch (clipboardError) {
+        // If clipboard fails, show the URL to copy manually
+        alert(`Please copy this link to share: ${shareUrl}`)
+      }
     }
   } catch (error) {
-    console.error('Error sharing:', error)
+    // Ignore AbortError as it's expected when user cancels the share dialog
+    if (error.name !== 'AbortError') {
+      console.error('Error sharing:', error)
+      alert('Failed to share playlist. Please try again.')
+    }
   }
 }
 
 async function handleStartPlaylist() {
   try {
+    // Show loading state
+    const startButton = document.getElementById('startPlaylistBtn')
+    if (startButton) {
+      startButton.disabled = true
+      startButton.innerHTML = '<span class="animate-spin">⌛</span> Creating playlist...'
+    }
+
     // Create new playlist
     const { data: playlist, error } = await supabase
       .from('playlists')
@@ -320,32 +300,59 @@ async function handleStartPlaylist() {
 
     // Generate QR code
     const qrCodeUrl = `${window.location.origin}/playlist/${playlist.id}`
-    const qrCodeDataUrl = await QRCode.toDataURL(qrCodeUrl, {
-      width: 200,
-      margin: 2,
-      color: {
-        dark: '#000000',
-        light: '#ffffff'
-      }
-    })
+    console.log('Generating QR code for URL:', qrCodeUrl)
+    
+    // Clear any existing QR code
+    const qrCodeImage = document.getElementById('qrCodeImage')
+    if (qrCodeImage) {
+      qrCodeImage.src = ''
+    }
+
+    // Generate new QR code using qrcode-generator
+    const qr = qrcode(0, 'M')
+    qr.addData(qrCodeUrl)
+    qr.make()
+    const qrCodeDataUrl = qr.createDataURL(4, 0)
     
     // Display QR code in modal
-    qrCodeImage.src = qrCodeDataUrl
-    qrCodeModal.classList.remove('hidden')
+    if (qrCodeImage) {
+      qrCodeImage.src = qrCodeDataUrl
+      qrCodeImage.onload = () => console.log('QR code image loaded')
+    }
+
+    // Show the modal
+    const qrCodeModal = document.getElementById('qrCodeModal')
+    if (qrCodeModal) {
+      qrCodeModal.classList.remove('hidden')
+    }
 
     // Add event listeners to the buttons
-    document.getElementById('startSearchBtn').addEventListener('click', () => {
-      qrCodeModal.classList.add('hidden')
-      searchModal.classList.remove('hidden')
-    })
+    const startSearchBtn = document.getElementById('startSearchBtn')
+    const sharePlaylistBtn = document.getElementById('sharePlaylistBtn')
 
-    document.getElementById('sharePlaylistBtn').addEventListener('click', () => {
-      handleSharePlaylist(playlist.id)
-    })
+    if (startSearchBtn) {
+      startSearchBtn.addEventListener('click', () => {
+        qrCodeModal.classList.add('hidden')
+        searchModal.classList.remove('hidden')
+      })
+    }
+
+    if (sharePlaylistBtn) {
+      sharePlaylistBtn.addEventListener('click', () => {
+        handleSharePlaylist(playlist.id)
+      })
+    }
 
   } catch (error) {
     console.error('Error creating playlist:', error)
-    alert('Failed to create playlist. Please try again.')
+    alert(error.message || 'Failed to create playlist. Please try again.')
+  } finally {
+    // Reset button state
+    const startButton = document.getElementById('startPlaylistBtn')
+    if (startButton) {
+      startButton.disabled = false
+      startButton.innerHTML = 'Create Playlist'
+    }
   }
 }
 
@@ -465,4 +472,47 @@ window.handleCloseSearchModal = handleCloseSearchModal
 window.handleStartPlaylist = handleStartPlaylist
 window.handleSharePlaylist = handleSharePlaylist
 window.handleUpvote = handleUpvote
-window.handleDownvote = handleDownvote 
+window.handleDownvote = handleDownvote
+
+async function handleStartScanner() {
+  try {
+    // Create new scanner instance
+    scanner = new Instascan.Scanner({
+      video: videoElement,
+      scanPeriod: 5,
+      mirror: false
+    });
+
+    // Add scan listener
+    scanner.addListener('scan', function(content) {
+      console.log('QR Code detected:', content);
+      // Stop scanning
+      handleCloseScanner();
+      
+      // Extract playlist ID from URL
+      const playlistId = content.split('/').pop();
+      handlePlaylistJoin(playlistId);
+    });
+
+    // Request camera access
+    scannerStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    });
+    
+    // Set the video source
+    videoElement.srcObject = scannerStream;
+    
+    // Start scanning
+    await scanner.start();
+    scannerContainer.classList.remove('hidden');
+  } catch (error) {
+    console.error('Error starting scanner:', error);
+    if (error.name === 'NotAllowedError') {
+      alert('Camera access was denied. Please allow camera access in your browser settings.');
+    } else if (error.name === 'NotFoundError') {
+      alert('No camera found. Please make sure your device has a camera.');
+    } else {
+      alert('Unable to start camera. Please try again or refresh the page.');
+    }
+  }
+} 

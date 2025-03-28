@@ -18,7 +18,8 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         playlist: resolve(__dirname, 'src/playlist/playlist.html')
-      }
+      },
+      external: ['@supabase/supabase-js']
     },
     outDir: 'dist'
   },
@@ -37,7 +38,7 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['qrcode', 'jsqr']
+    exclude: ['@supabase/supabase-js']
   },
   publicDir: 'public',
   base: '/'
