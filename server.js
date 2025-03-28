@@ -53,8 +53,37 @@ app.get('*', (req, res) => {
 })
 
 const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-    console.log(`Serving files from: ${path.join(__dirname, 'dist')}`)
-    console.log('Available files:', fs.readdirSync(path.join(__dirname, 'dist')))
+
+// Function to find an available port
+async function findAvailablePort(startPort) {
+    const net = await import('net')
+    return new Promise((resolve, reject) => {
+        const server = net.createServer()
+        
+        server.listen(startPort, () => {
+            const { port } = server.address()
+            server.close(() => resolve(port))
+        })
+        
+        server.on('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+                resolve(findAvailablePort(startPort + 1))
+            } else {
+                reject(err)
+            }
+        })
+    })
+}
+
+// Start server with port finding
+findAvailablePort(PORT).then(port => {
+    app.listen(port, '0.0.0.0', () => {
+        console.log(`Server running on port ${port}`)
+        console.log(`Serving files from: ${path.join(__dirname, 'dist')}`)
+        console.log('Available files:', fs.readdirSync(path.join(__dirname, 'dist')))
+        console.log(`Access the playlist at: http://localhost:${port}/playlist/123e4567-e89b-12d3-a456-426614174000`)
+    })
+}).catch(err => {
+    console.error('Failed to start server:', err)
+    process.exit(1)
 }) 

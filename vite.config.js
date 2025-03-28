@@ -15,7 +15,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        playlist: resolve(__dirname, 'src/pages/playlist.html')
+        playlist: resolve(__dirname, 'playlist.html')
       }
     },
     copyPublicDir: true,
