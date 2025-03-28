@@ -14,14 +14,13 @@ export default defineConfig({
     }
   },
   build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        playlist: resolve(__dirname, 'src/playlist/playlist.html')
+        main: 'index.html',
       },
-      external: ['@supabase/supabase-js']
     },
-    outDir: 'dist'
   },
   css: {
     postcss: {
@@ -33,9 +32,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '@scripts': resolve(__dirname, 'public/scripts')
-    }
+      '@': '/src',
+    },
   },
   optimizeDeps: {
     exclude: ['@supabase/supabase-js']

@@ -2,10 +2,10 @@ import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_CLIENT_ID } from './c
 import config from './config.js'
 
 // Spotify API Configuration
-const SPOTIFY_REDIRECT_URI = `${window.location.origin}/auth/spotify`
+const SPOTIFY_REDIRECT_URI = config.SPOTIFY_REDIRECT_URI;
 
 // YouTube Music API Configuration
-const YOUTUBE_REDIRECT_URI = `${window.location.origin}/auth/youtube`
+const YOUTUBE_REDIRECT_URI = config.YOUTUBE_REDIRECT_URI;
 
 class MusicService {
   constructor() {
