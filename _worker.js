@@ -26,6 +26,16 @@ export default {
     }
     
     // Handle all other routes
-    return env.ASSETS.fetch(request)
+    try {
+      const response = await env.ASSETS.fetch(request)
+      if (!response.ok) {
+        console.error('Failed to fetch asset:', response.status, request.url)
+        return new Response('Not Found', { status: 404 })
+      }
+      return response
+    } catch (error) {
+      console.error('Error fetching asset:', error)
+      return new Response('Internal Server Error', { status: 500 })
+    }
   }
 } 
