@@ -18,7 +18,8 @@ export default defineConfig({
         playlist: resolve(__dirname, 'src/pages/playlist.html')
       }
     },
-    copyPublicDir: true
+    copyPublicDir: true,
+    emptyOutDir: true
   },
   css: {
     postcss: {
