@@ -21,7 +21,8 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
       },
       external: ['@supabase/supabase-js']
-    }
+    },
+    copyPublicDir: true
   },
   css: {
     postcss: {
@@ -41,5 +42,5 @@ export default defineConfig({
     exclude: ['@supabase/supabase-js']
   },
   publicDir: 'public',
-  base: '/'
+  base: './'
 }) 
