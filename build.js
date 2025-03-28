@@ -65,6 +65,29 @@ if (existsSync(playlistsSrc)) {
     console.error('playlists.html not found in src/pages')
 }
 
+// Create playlist directory
+const playlistDir = join(distDir, 'playlist')
+if (!existsSync(playlistDir)) {
+    mkdirSync(playlistDir, { recursive: true })
+}
+
+// Create individual HTML files for known playlists
+const knownPlaylists = [
+    { id: 'd34f6992-a142-4a9f-943d-9acdb5df2c64', name: 'My First Playlist' },
+    { id: '123e4567-e89b-12d3-a456-426614174000', name: 'Another Playlist' }
+]
+
+console.log('Creating individual playlist HTML files...')
+for (const playlist of knownPlaylists) {
+    const playlistHtmlPath = join(playlistDir, `${playlist.id}.html`)
+    const playlistContent = readFileSync(playlistDest, 'utf-8')
+        .replace('TrackToss - Playlist', `TrackToss - ${playlist.name}`)
+        .replace('Playlist', playlist.name)
+    
+    writeFileSync(playlistHtmlPath, playlistContent)
+    console.log(`Created playlist HTML for ${playlist.name} (${playlist.id})`)
+}
+
 // Clean up src/pages directory
 try {
     rmSync(join(distDir, 'src', 'pages'), { recursive: true, force: true })
