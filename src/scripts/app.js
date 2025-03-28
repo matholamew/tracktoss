@@ -450,32 +450,23 @@ async function handleStartScanner() {
       }
     })
 
-    // Create canvas for QR code scanning
-    const canvas = document.createElement('canvas')
-    const context = canvas.getContext('2d')
+    // Create a BarcodeDetector
+    const barcodeDetector = new BarcodeDetector({
+      formats: ['qr_code']
+    })
     
     // Start scanning loop
-    function scan() {
-      if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-        // Set canvas size to match video
-        canvas.width = videoElement.videoWidth
-        canvas.height = videoElement.videoHeight
+    async function scan() {
+      try {
+        const barcodes = await barcodeDetector.detect(videoElement)
         
-        // Draw video frame to canvas
-        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height)
-        
-        // Get image data from canvas
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
-        
-        // Scan for QR code using jsQR
-        const code = jsQR(imageData.data, imageData.width, imageData.height)
-        
-        if (code) {
-          console.log('QR Code detected:', code.data)
+        if (barcodes.length > 0) {
+          const qrData = barcodes[0].rawValue
+          console.log('QR Code detected:', qrData)
           
           // Try to parse the URL
           try {
-            const url = new URL(code.data)
+            const url = new URL(qrData)
             // Extract playlist ID from the path
             const playlistId = url.pathname.split('/').pop()
             
@@ -490,6 +481,8 @@ async function handleStartScanner() {
             console.error('Invalid QR code URL:', error)
           }
         }
+      } catch (error) {
+        console.error('Error scanning:', error)
       }
       
       // Continue scanning
