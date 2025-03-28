@@ -27,7 +27,17 @@ export default {
     
     // Handle all other routes
     try {
-      const response = await env.ASSETS.fetch(request)
+      // First try to fetch the exact path
+      let response = await env.ASSETS.fetch(request)
+      
+      // If not found, try to fetch index.html for SPA routing
+      if (!response.ok && url.pathname !== '/index.html') {
+        const indexResponse = await env.ASSETS.fetch(new Request(new URL('/index.html', url.origin)))
+        if (indexResponse.ok) {
+          return indexResponse
+        }
+      }
+      
       if (!response.ok) {
         console.error('Failed to fetch asset:', response.status, request.url)
         return new Response('Not Found', { status: 404 })
