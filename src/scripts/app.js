@@ -446,12 +446,23 @@ async function handleStartScanner() {
         
         if (code) {
           console.log('QR Code detected:', code.data)
-          // Stop scanning
-          handleCloseScanner()
           
-          // Extract playlist ID from URL
-          const playlistId = code.data.split('/').pop()
-          handlePlaylistJoin(playlistId)
+          // Try to parse the URL
+          try {
+            const url = new URL(code.data)
+            // Extract playlist ID from the path
+            const playlistId = url.pathname.split('/').pop()
+            
+            if (playlistId) {
+              console.log('Found playlist ID:', playlistId)
+              // Stop scanning
+              handleCloseScanner()
+              // Navigate to the playlist
+              window.location.href = `/playlist/${playlistId}`
+            }
+          } catch (error) {
+            console.error('Invalid QR code URL:', error)
+          }
         }
       }
       
