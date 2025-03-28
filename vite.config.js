@@ -20,6 +20,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
       },
+      external: ['@supabase/supabase-js']
     },
   },
   css: {
@@ -40,5 +41,15 @@ export default defineConfig({
     exclude: ['@supabase/supabase-js']
   },
   publicDir: 'public',
-  base: '/'
+  base: '/',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+      },
+      external: ['@supabase/supabase-js']
+    }
+  }
 }) 
