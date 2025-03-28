@@ -20,7 +20,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
       },
-      external: ['@supabase/supabase-js', '@scripts/config.js', '@scripts/app.js']
+      external: ['@supabase/supabase-js']
     }
   },
   css: {
@@ -33,8 +33,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '@scripts': resolve(__dirname, 'public/scripts')
+      '@': resolve(__dirname, 'src')
     }
   },
   optimizeDeps: {
