@@ -434,77 +434,129 @@ window.handleDownvote = handleDownvote
 
 async function handleStartScanner() {
   try {
-    // Request camera access
-    scannerStream = await navigator.mediaDevices.getUserMedia({
-      video: { 
-        facingMode: 'environment',
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      }
-    })
+    // Check if we're on a mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     
-    // Set the video source
-    videoElement.srcObject = scannerStream
-    
-    // Wait for video to be ready
-    await new Promise((resolve) => {
-      videoElement.onloadedmetadata = () => {
-        videoElement.play()
-        resolve()
-      }
-    })
-
-    // Create canvas for QR code scanning
-    const canvas = document.createElement('canvas')
-    const context = canvas.getContext('2d')
-    
-    // Start scanning loop
-    function scan() {
-      if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-        // Set canvas size to match video
-        canvas.width = videoElement.videoWidth
-        canvas.height = videoElement.videoHeight
+    if (isMobile) {
+      // For mobile devices, use the device's native camera app
+      const playlistId = window.location.pathname.split('/').pop()
+      if (playlistId) {
+        const playlistUrl = `${window.location.origin}/playlist/${playlistId}`
+        // Create a temporary input element
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = 'image/*'
+        input.capture = 'environment'
         
-        // Draw video frame to canvas
-        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height)
-        
-        // Get image data from canvas
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
-        
-        // Scan for QR code using jsQR
-        const code = jsQR(imageData.data, imageData.width, imageData.height)
-        
-        if (code) {
-          console.log('QR Code detected:', code.data)
-          
-          // Try to parse the URL
-          try {
-            const url = new URL(code.data)
-            // Extract playlist ID from the path
-            const playlistId = url.pathname.split('/').pop()
-            
-            if (playlistId) {
-              console.log('Found playlist ID:', playlistId)
-              // Stop scanning
-              handleCloseScanner()
-              // Navigate to the playlist
-              window.location.href = `/playlist/${playlistId}`
+        // Handle file selection
+        input.onchange = (e) => {
+          const file = e.target.files[0]
+          if (file) {
+            // Create a FileReader
+            const reader = new FileReader()
+            reader.onload = (event) => {
+              // Create an image element
+              const img = new Image()
+              img.onload = () => {
+                // Create a canvas
+                const canvas = document.createElement('canvas')
+                const context = canvas.getContext('2d')
+                canvas.width = img.width
+                canvas.height = img.height
+                
+                // Draw the image
+                context.drawImage(img, 0, 0)
+                
+                // Get image data
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+                
+                // Scan for QR code
+                const code = jsQR(imageData.data, imageData.width, imageData.height)
+                
+                if (code) {
+                  console.log('QR Code detected:', code.data)
+                  try {
+                    const url = new URL(code.data)
+                    const playlistId = url.pathname.split('/').pop()
+                    if (playlistId) {
+                      window.location.href = `/playlist/${playlistId}`
+                    }
+                  } catch (error) {
+                    console.error('Invalid QR code URL:', error)
+                  }
+                }
+              }
+              img.src = event.target.result
             }
-          } catch (error) {
-            console.error('Invalid QR code URL:', error)
+            reader.readAsDataURL(file)
           }
         }
+        
+        // Trigger file selection
+        input.click()
+      }
+    } else {
+      // For desktop devices, use the camera API
+      scannerStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }
+      })
+      
+      // Set the video source
+      videoElement.srcObject = scannerStream
+      
+      // Wait for video to be ready
+      await new Promise((resolve) => {
+        videoElement.onloadedmetadata = () => {
+          videoElement.play()
+          resolve()
+        }
+      })
+
+      // Create a BarcodeDetector
+      const barcodeDetector = new BarcodeDetector({
+        formats: ['qr_code']
+      })
+      
+      // Start scanning loop
+      async function scan() {
+        try {
+          const barcodes = await barcodeDetector.detect(videoElement)
+          
+          if (barcodes.length > 0) {
+            const qrData = barcodes[0].rawValue
+            console.log('QR Code detected:', qrData)
+            
+            // Try to parse the URL
+            try {
+              const url = new URL(qrData)
+              // Extract playlist ID from the path
+              const playlistId = url.pathname.split('/').pop()
+              
+              if (playlistId) {
+                console.log('Found playlist ID:', playlistId)
+                // Stop scanning
+                handleCloseScanner()
+                // Navigate to the playlist
+                window.location.href = `/playlist/${playlistId}`
+              }
+            } catch (error) {
+              console.error('Invalid QR code URL:', error)
+            }
+          }
+        } catch (error) {
+          console.error('Error scanning:', error)
+        }
+        
+        // Continue scanning
+        animationFrame = requestAnimationFrame(scan)
       }
       
-      // Continue scanning
-      animationFrame = requestAnimationFrame(scan)
+      // Show scanner container
+      scannerContainer.classList.remove('hidden')
+      
+      // Start scanning
+      scan()
     }
-    
-    // Show scanner container
-    scannerContainer.classList.remove('hidden')
-    
-    // Start scanning
-    scan()
   } catch (error) {
     console.error('Error starting scanner:', error)
     if (error.name === 'NotAllowedError') {
