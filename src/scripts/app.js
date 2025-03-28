@@ -415,7 +415,15 @@ async function handleStartScanner() {
     // Set the video source
     videoElement.srcObject = scannerStream;
     
-    // Create new scanner instance after video source is set
+    // Wait for video to be ready
+    await new Promise((resolve) => {
+      videoElement.onloadedmetadata = () => {
+        videoElement.play();
+        resolve();
+      };
+    });
+
+    // Create new scanner instance after video is ready
     scanner = new Instascan.Scanner({
       video: videoElement,
       scanPeriod: 5,
