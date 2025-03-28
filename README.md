@@ -22,7 +22,18 @@ A crowdsourced playlist web application that allows users to create and join pla
    VITE_SUPABASE_URL=your_supabase_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
-4. Start the development server:
+4. Set up the configuration file:
+   ```bash
+   cp public/scripts/config.example.js public/scripts/config.js
+   ```
+   Then edit `public/scripts/config.js` with your actual API credentials:
+   - `SUPABASE_URL`: Your Supabase project URL
+   - `SUPABASE_ANON_KEY`: Your Supabase anonymous key
+   - `SPOTIFY_CLIENT_ID`: Your Spotify client ID
+   - `SPOTIFY_REDIRECT_URI`: Your Spotify redirect URI
+   - `YOUTUBE_CLIENT_ID`: Your YouTube client ID
+   - `YOUTUBE_REDIRECT_URI`: Your YouTube redirect URI
+5. Start the development server:
    ```bash
    npm run dev
    ```

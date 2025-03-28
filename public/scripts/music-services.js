@@ -1,4 +1,5 @@
 import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_CLIENT_ID } from './config.js'
+import config from './config.js'
 
 // Spotify API Configuration
 const SPOTIFY_REDIRECT_URI = `${window.location.origin}/auth/spotify`
@@ -144,20 +145,13 @@ class MusicService {
   }
 
   // Spotify Authentication
-  async authenticateSpotify() {
-    // Generate random state for security
-    const state = Math.random().toString(36).substring(7)
-    localStorage.setItem('spotify_state', state)
-
-    // Redirect to Spotify auth
-    const authUrl = new URL('https://accounts.spotify.com/authorize')
-    authUrl.searchParams.append('client_id', SPOTIFY_CLIENT_ID)
-    authUrl.searchParams.append('response_type', 'token')
-    authUrl.searchParams.append('redirect_uri', SPOTIFY_REDIRECT_URI)
-    authUrl.searchParams.append('state', state)
-    authUrl.searchParams.append('scope', 'user-read-private user-read-email user-library-read')
-
-    window.location.href = authUrl.toString()
+  authenticateSpotify() {
+    const clientId = config.SPOTIFY_CLIENT_ID;
+    const redirectUri = config.SPOTIFY_REDIRECT_URI;
+    const scope = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative';
+    
+    const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+    window.location.href = authUrl;
   }
 
   handleSpotifyCallback(hash) {
@@ -185,20 +179,13 @@ class MusicService {
   }
 
   // YouTube Authentication
-  async authenticateYouTube() {
-    // Generate random state for security
-    const state = Math.random().toString(36).substring(7)
-    localStorage.setItem('youtube_state', state)
-
-    // Redirect to YouTube auth
-    const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth')
-    authUrl.searchParams.append('client_id', YOUTUBE_CLIENT_ID)
-    authUrl.searchParams.append('redirect_uri', YOUTUBE_REDIRECT_URI)
-    authUrl.searchParams.append('response_type', 'token')
-    authUrl.searchParams.append('scope', 'https://www.googleapis.com/auth/youtube.readonly')
-    authUrl.searchParams.append('state', state)
-
-    window.location.href = authUrl.toString()
+  authenticateYouTube() {
+    const clientId = config.YOUTUBE_CLIENT_ID;
+    const redirectUri = config.YOUTUBE_REDIRECT_URI;
+    const scope = 'https://www.googleapis.com/auth/youtube.readonly';
+    
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}`;
+    window.location.href = authUrl;
   }
 
   handleYouTubeCallback(hash) {
