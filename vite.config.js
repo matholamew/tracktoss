@@ -35,7 +35,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
-      '@scripts': resolve(__dirname, 'public/scripts')
+      '@scripts': resolve(__dirname, 'src/scripts')
     }
   },
   optimizeDeps: {
