@@ -7,12 +7,7 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
-    strictPort: true,
-    historyApiFallback: {
-      rewrites: [
-        { from: /^\/playlist\/.*/, to: '/src/pages/playlist.html' }
-      ]
-    }
+    strictPort: true
   },
   build: {
     outDir: 'dist',
@@ -21,8 +16,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         playlist: resolve(__dirname, 'src/pages/playlist.html')
-      },
-      external: ['qrcode-generator', 'instascan']
+      }
     },
     copyPublicDir: true
   },
