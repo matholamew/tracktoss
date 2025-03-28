@@ -11,8 +11,14 @@ export default {
         return new Response('Invalid playlist ID format', { status: 400 })
       }
       
+      // Create a new request for playlist.html
+      const playlistRequest = new Request(new URL('/playlist.html', url.origin), {
+        method: 'GET',
+        headers: request.headers
+      })
+      
       // Return the playlist page
-      return env.ASSETS.fetch(request)
+      return env.ASSETS.fetch(playlistRequest)
     }
     
     // Handle all other routes
