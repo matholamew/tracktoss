@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrackToss - Playlist</title>
+    <link rel="stylesheet" href="/src/styles/main.css">
+    <!-- Load external libraries first -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <!-- Load our app code after external libraries -->
+    <script type="module" src="/src/scripts/config.js"></script>
+    <script type="module" src="/src/scripts/playlist.js"></script>
+</head>
+<body class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Safe area for notched devices -->
+    <div class="safe-area-inset-top"></div>
+    
+    <div class="container mx-auto px-4 py-6 max-w-lg">
+        <!-- Playlist Header -->
+        <header class="text-center mb-8">
+            <h1 class="ios-header mb-2">Playlist</h1>
+            <p class="ios-subheader">Vote on songs to change their order</p>
+        </header>
+
+        <!-- Playlist Content -->
+        <main>
+            <!-- Songs List -->
+            <div id="songsList" class="space-y-4">
+                <!-- Songs will be dynamically inserted here -->
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 loading-spinner"></div>
+                <p class="mt-2 text-gray-600 dark:text-gray-400">Loading playlist...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-8 hidden">
+                <p class="text-gray-600 dark:text-gray-400">No songs in this playlist yet</p>
+            </div>
+        </main>
+
+        <!-- Add Song Button -->
+        <div class="fixed bottom-20 left-0 right-0 px-4">
+            <button id="addSongBtn" class="ios-btn-primary w-full">
+                Add a Song
+            </button>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div id="searchModal" class="fixed inset-0 bg-black/50 hidden">
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="modal-content w-full max-w-md transform transition-all">
+                <!-- Modal Header -->
+                <div class="modal-header flex items-center justify-between p-4">
+                    <h2 class="ios-header">Add Songs</h2>
+                    <button id="closeSearchModalBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Search Input -->
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            class="ios-input pl-10"
+                            placeholder="Search songs..."
+                            autocomplete="off"
+                        >
+                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Search Results -->
+                <div class="max-h-[60vh] overflow-y-auto">
+                    <div id="searchResults" class="divide-y divide-gray-200 dark:divide-gray-700">
+                        <!-- Results will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="searchLoading" class="hidden p-4 text-center">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 loading-spinner"></div>
+                    <p class="mt-2 text-gray-600 dark:text-gray-400">Searching...</p>
+                </div>
+
+                <!-- No Results State -->
+                <div id="noResults" class="hidden p-4 text-center text-gray-600 dark:text-gray-400">
+                    No results found
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safe area for home indicator -->
+    <div class="safe-area-inset-bottom"></div>
+</body>
+</html> 
