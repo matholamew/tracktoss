@@ -11,14 +11,18 @@ export default {
         return new Response('Invalid playlist ID format', { status: 400 })
       }
       
-      // Create a new request for playlist.html
-      const playlistRequest = new Request(new URL('/playlist.html', url.origin), {
-        method: 'GET',
-        headers: request.headers
-      })
-      
-      // Return the playlist page
-      return env.ASSETS.fetch(playlistRequest)
+      // Try to fetch playlist.html
+      try {
+        const playlistResponse = await env.ASSETS.fetch(new Request(new URL('/playlist.html', url.origin)))
+        if (!playlistResponse.ok) {
+          console.error('Failed to fetch playlist.html:', playlistResponse.status)
+          return new Response('Playlist page not found', { status: 404 })
+        }
+        return playlistResponse
+      } catch (error) {
+        console.error('Error fetching playlist.html:', error)
+        return new Response('Internal Server Error', { status: 500 })
+      }
     }
     
     // Handle all other routes
