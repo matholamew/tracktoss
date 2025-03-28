@@ -88,13 +88,17 @@ async function loadPlaylist(playlistId) {
         }
         if (!playlist) {
             console.error('Playlist not found')
-            throw new Error('Playlist not found')
+            showError('This playlist no longer exists')
+            document.title = 'Playlist Not Found - TrackToss'
+            loadingState.classList.add('hidden')
+            return
         }
 
         console.log('Playlist loaded:', playlist)
 
-        // Update page title
+        // Update page title and header
         document.title = `${playlist.name} - TrackToss`
+        document.querySelector('.ios-header').textContent = playlist.name
         
         // Load songs
         await loadSongs()
@@ -102,6 +106,7 @@ async function loadPlaylist(playlistId) {
     } catch (error) {
         console.error('Error loading playlist:', error)
         showError('Error loading playlist: ' + error.message)
+        loadingState.classList.add('hidden')
     }
 }
 
@@ -293,21 +298,17 @@ async function handleDownvote(songId) {
 // Show error message
 function showError(message) {
     const errorDiv = document.createElement('div')
-    errorDiv.className = 'fixed top-4 left-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'
+    errorDiv.className = 'text-center py-8'
     errorDiv.innerHTML = `
-        <div class="flex items-center">
-            <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-            <div class="ml-3">
-                <p class="text-sm">${message}</p>
-            </div>
+        <div class="bg-red-50 dark:bg-red-900/20 rounded-xl p-4 mx-4">
+            <p class="text-red-600 dark:text-red-400">${message}</p>
+            <a href="/playlists" class="text-primary mt-2 inline-block">Return to Playlists</a>
         </div>
     `
-    document.body.appendChild(errorDiv)
-    setTimeout(() => errorDiv.remove(), 5000)
+    songsList.innerHTML = ''
+    songsList.appendChild(errorDiv)
+    loadingState.classList.add('hidden')
+    emptyState.classList.add('hidden')
 }
 
 // Subscribe to real-time updates
