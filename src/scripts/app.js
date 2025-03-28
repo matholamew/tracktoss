@@ -3,6 +3,7 @@ import { musicService } from './music-services.js'
 
 // Global variables
 let currentPlaylistId = null
+let isSharing = false
 
 // DOM Elements
 const startPlaylistBtn = document.getElementById('startPlaylistBtn')
@@ -174,9 +175,17 @@ async function handlePlaylistJoin(playlistId) {
 }
 
 async function handleSharePlaylist(playlistId) {
+  // Prevent multiple share attempts
+  if (isSharing) {
+    console.log('Share already in progress')
+    return
+  }
+
   const shareUrl = `${window.location.origin}/playlist/${playlistId}`
   
   try {
+    isSharing = true
+    
     // Check if Web Share API is available
     if (navigator.share) {
       // Use Web Share API
@@ -202,6 +211,9 @@ async function handleSharePlaylist(playlistId) {
       console.error('Error sharing:', error)
       alert('Failed to share playlist. Please try again.')
     }
+  } finally {
+    // Reset sharing state
+    isSharing = false
   }
 }
 
