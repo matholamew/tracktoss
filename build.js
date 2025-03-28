@@ -21,8 +21,12 @@ const playlistSrc = join(pagesDir, 'playlist.html')
 const playlistDest = join(distDir, 'playlist.html')
 if (existsSync(playlistSrc)) {
     const content = readFileSync(playlistSrc, 'utf-8')
-    writeFileSync(playlistDest, content)
-    console.log('Moved playlist.html to root')
+    // Ensure the bundled assets are correctly referenced
+    const updatedContent = content
+        .replace(/src="\/src\/scripts\//g, 'src="/assets/')
+        .replace(/href="\/src\/styles\//g, 'href="/assets/')
+    writeFileSync(playlistDest, updatedContent)
+    console.log('Moved and updated playlist.html to root')
 } else {
     console.error('playlist.html not found in src/pages')
 }
@@ -32,8 +36,12 @@ const playlistsSrc = join(pagesDir, 'playlists.html')
 const playlistsDest = join(distDir, 'playlists.html')
 if (existsSync(playlistsSrc)) {
     const content = readFileSync(playlistsSrc, 'utf-8')
-    writeFileSync(playlistsDest, content)
-    console.log('Moved playlists.html to root')
+    // Ensure the bundled assets are correctly referenced
+    const updatedContent = content
+        .replace(/src="\/src\/scripts\//g, 'src="/assets/')
+        .replace(/href="\/src\/styles\//g, 'href="/assets/')
+    writeFileSync(playlistsDest, updatedContent)
+    console.log('Moved and updated playlists.html to root')
 } else {
     console.error('playlists.html not found in src/pages')
 }

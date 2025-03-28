@@ -17,9 +17,9 @@ fallthrough = true
 
 [site]
 bucket = "./dist"
-include = ["**/*"]
-exclude = ["node_modules/**/*"]
+entry-point = "_worker.js"
 
 [site.static]
 include = ["**/*"]
-exclude = ["node_modules/**/*"] 
+exclude = ["node_modules/**/*"]
+fallthrough = true 
