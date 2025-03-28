@@ -20,7 +20,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
       },
-      external: ['qrcode-generator']
+      external: ['qrcode-generator', 'instascan']
     },
     copyPublicDir: true
   },
