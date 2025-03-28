@@ -2,55 +2,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url)
     
-    // Handle playlist routes
-    if (url.pathname.startsWith('/playlist/')) {
-      const playlistId = url.pathname.split('/')[2]
-      // Validate UUID format
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-      if (!uuidRegex.test(playlistId)) {
-        return new Response('Invalid playlist ID format', { status: 400 })
-      }
-      
-      // Try to fetch playlist.html
-      try {
-        const playlistResponse = await env.ASSETS.fetch(new Request(new URL('/playlist.html', url.origin)))
-        if (!playlistResponse.ok) {
-          console.error('Failed to fetch playlist.html:', playlistResponse.status)
-          // Try fetching index.html as fallback for SPA routing
-          const indexResponse = await env.ASSETS.fetch(new Request(new URL('/index.html', url.origin)))
-          if (indexResponse.ok) {
-            return indexResponse
-          }
-          return new Response('Playlist page not found', { status: 404 })
-        }
-        return playlistResponse
-      } catch (error) {
-        console.error('Error fetching playlist.html:', error)
-        return new Response('Internal Server Error', { status: 500 })
-      }
-    }
-
-    // Handle playlists route
-    if (url.pathname === '/playlists') {
-      try {
-        const playlistsResponse = await env.ASSETS.fetch(new Request(new URL('/playlists.html', url.origin)))
-        if (!playlistsResponse.ok) {
-          console.error('Failed to fetch playlists.html:', playlistsResponse.status)
-          // Try fetching index.html as fallback for SPA routing
-          const indexResponse = await env.ASSETS.fetch(new Request(new URL('/index.html', url.origin)))
-          if (indexResponse.ok) {
-            return indexResponse
-          }
-          return new Response('Playlists page not found', { status: 404 })
-        }
-        return playlistsResponse
-      } catch (error) {
-        console.error('Error fetching playlists.html:', error)
-        return new Response('Internal Server Error', { status: 500 })
-      }
-    }
-    
-    // Handle asset requests
+    // Handle asset requests first
     if (url.pathname.startsWith('/assets/')) {
       try {
         const response = await env.ASSETS.fetch(request)
@@ -64,27 +16,32 @@ export default {
         return new Response('Internal Server Error', { status: 500 })
       }
     }
-    
-    // Handle all other routes
-    try {
-      // First try to fetch the exact path
-      let response = await env.ASSETS.fetch(request)
-      
-      // If not found, try to fetch index.html for SPA routing
-      if (!response.ok && url.pathname !== '/index.html') {
-        const indexResponse = await env.ASSETS.fetch(new Request(new URL('/index.html', url.origin)))
-        if (indexResponse.ok) {
-          return indexResponse
+
+    // Handle static files
+    if (url.pathname.endsWith('.html') || url.pathname.endsWith('.css') || url.pathname.endsWith('.ico')) {
+      try {
+        const response = await env.ASSETS.fetch(request)
+        if (!response.ok) {
+          console.error('Failed to fetch static file:', response.status, request.url)
+          return new Response('File not found', { status: 404 })
         }
+        return response
+      } catch (error) {
+        console.error('Error fetching static file:', error)
+        return new Response('Internal Server Error', { status: 500 })
       }
-      
+    }
+    
+    // For all other routes, serve index.html for SPA routing
+    try {
+      const response = await env.ASSETS.fetch(new Request(new URL('/index.html', url.origin)))
       if (!response.ok) {
-        console.error('Failed to fetch asset:', response.status, request.url)
-        return new Response('Not Found', { status: 404 })
+        console.error('Failed to fetch index.html:', response.status)
+        return new Response('Application not found', { status: 404 })
       }
       return response
     } catch (error) {
-      console.error('Error fetching asset:', error)
+      console.error('Error fetching index.html:', error)
       return new Response('Internal Server Error', { status: 500 })
     }
   }
