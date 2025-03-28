@@ -434,52 +434,33 @@ window.handleDownvote = handleDownvote
 
 async function handleStartScanner() {
   try {
-    // Request camera access with specific constraints for mobile
-    scannerStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: 'environment',
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      }
+    // Use the browser's native QR code scanning
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
     })
     
-    // Set the video source
-    videoElement.srcObject = scannerStream
-    
-    // Wait for video to be ready
-    await new Promise((resolve) => {
-      videoElement.onloadedmetadata = () => {
-        videoElement.play()
-        resolve()
-      }
+    // Create a BarcodeDetector
+    const barcodeDetector = new BarcodeDetector({
+      formats: ['qr_code']
     })
-
-    // Create canvas for QR code scanning
-    const canvas = document.createElement('canvas')
-    const context = canvas.getContext('2d')
     
-    // Start scanning loop
-    function scan() {
-      if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-        // Set canvas size to match video
-        canvas.width = videoElement.videoWidth
-        canvas.height = videoElement.videoHeight
+    // Create a video element for the camera feed
+    const video = document.createElement('video')
+    video.srcObject = stream
+    video.play()
+    
+    // Start scanning
+    const scan = async () => {
+      try {
+        const barcodes = await barcodeDetector.detect(video)
         
-        // Draw video frame to canvas
-        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height)
-        
-        // Get image data from canvas
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
-        
-        // Scan for QR code using jsQR
-        const code = jsQR(imageData.data, imageData.width, imageData.height)
-        
-        if (code) {
-          console.log('QR Code detected:', code.data)
+        if (barcodes.length > 0) {
+          const qrData = barcodes[0].rawValue
+          console.log('QR Code detected:', qrData)
           
           // Try to parse the URL
           try {
-            const url = new URL(code.data)
+            const url = new URL(qrData)
             // Extract playlist ID from the path
             const playlistId = url.pathname.split('/').pop()
             
@@ -494,13 +475,15 @@ async function handleStartScanner() {
             console.error('Invalid QR code URL:', error)
           }
         }
+      } catch (error) {
+        console.error('Error scanning:', error)
       }
       
       // Continue scanning
-      animationFrame = requestAnimationFrame(scan)
+      requestAnimationFrame(scan)
     }
     
-    // Show scanner container first
+    // Show scanner container
     scannerContainer.classList.remove('hidden')
     
     // Start scanning
