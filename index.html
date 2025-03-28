@@ -139,33 +139,14 @@
     </div>
 
     <!-- QR Code Scanner -->
-    <div id="scannerContainer" class="fixed inset-0 bg-black hidden">
-        <div class="absolute inset-0 flex flex-col">
-            <!-- Scanner Header -->
-            <div class="flex items-center justify-between p-4 bg-black/50">
-                <button id="closeScannerBtn" class="text-white">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-                <h2 class="text-white font-semibold">Scan QR Code</h2>
-                <div class="w-6"></div> <!-- Spacer for alignment -->
-            </div>
-
-            <!-- Scanner View -->
-            <div class="flex-1 relative">
-                <video id="scannerVideo" class="w-full h-full object-cover"></video>
-                
-                <!-- Scanner Overlay -->
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-64 h-64 border-2 border-white rounded-lg"></div>
-                </div>
-            </div>
-
-            <!-- Scanner Instructions -->
-            <div class="p-4 bg-black/50 text-white text-center">
-                <p class="text-sm">Position the QR code within the frame</p>
-            </div>
+    <div id="scannerContainer" class="fixed inset-0 bg-black z-50 hidden">
+        <div class="relative w-full h-full">
+            <video id="scannerVideo" class="w-full h-full object-cover" playsinline></video>
+            <button id="closeScannerBtn" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
     </div>
 
