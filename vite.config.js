@@ -18,7 +18,7 @@ export default defineConfig({
     assetsDir: 'assets',
     rollupOptions: {
       input: {
-        main: 'index.html',
+        main: resolve(__dirname, 'index.html'),
       },
     },
   },
@@ -32,8 +32,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/src',
-    },
+      '@': resolve(__dirname, 'src'),
+      '@scripts': resolve(__dirname, 'public/scripts')
+    }
   },
   optimizeDeps: {
     exclude: ['@supabase/supabase-js']
