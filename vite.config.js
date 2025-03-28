@@ -19,7 +19,8 @@ export default defineConfig({
       }
     },
     copyPublicDir: true,
-    emptyOutDir: true
+    emptyOutDir: true,
+    sourcemap: true
   },
   css: {
     postcss: {
