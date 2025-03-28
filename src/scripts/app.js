@@ -407,7 +407,15 @@ window.handleDownvote = handleDownvote
 
 async function handleStartScanner() {
   try {
-    // Create new scanner instance
+    // Request camera access first
+    scannerStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    });
+    
+    // Set the video source
+    videoElement.srcObject = scannerStream;
+    
+    // Create new scanner instance after video source is set
     scanner = new Instascan.Scanner({
       video: videoElement,
       scanPeriod: 5,
@@ -425,14 +433,6 @@ async function handleStartScanner() {
       handlePlaylistJoin(playlistId);
     });
 
-    // Request camera access
-    scannerStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }
-    });
-    
-    // Set the video source
-    videoElement.srcObject = scannerStream;
-    
     // Start scanning
     await scanner.start();
     scannerContainer.classList.remove('hidden');
