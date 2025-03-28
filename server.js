@@ -18,6 +18,8 @@ app.get('/playlist/:id', (req, res) => {
     if (!uuidRegex.test(playlistId)) {
         return res.status(400).send('Invalid playlist ID format')
     }
+    
+    // Check if playlist exists in database
     res.sendFile(path.join(__dirname, 'dist', 'playlist.html'))
 })
 

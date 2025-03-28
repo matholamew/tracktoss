@@ -48,9 +48,6 @@ function debounce(func, wait) {
     }
 }
 
-// Show loading state
-document.getElementById('playlist').innerHTML = '<div class="loading">Loading playlist...</div>'
-
 // Initialize playlist
 if (!playlistId) {
     console.error('No playlist ID provided')
@@ -282,9 +279,6 @@ window.handleDownvote = async function(songId) {
 function showError(message) {
     alert(message)
 }
-
-// Initialize playlist
-loadSongs()
 
 // Subscribe to real-time updates
 supabase
