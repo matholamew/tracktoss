@@ -1,5 +1,5 @@
 import { execSync } from 'child_process'
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs'
 import { join } from 'path'
 
 // Run Vite build
@@ -32,6 +32,14 @@ if (existsSync(playlistsSrc)) {
     const content = readFileSync(playlistsSrc, 'utf-8')
     writeFileSync(playlistsDest, content)
     console.log('Moved playlists.html to root')
+}
+
+// Clean up src/pages directory
+try {
+    rmSync(pagesDir, { recursive: true, force: true })
+    console.log('Cleaned up src/pages directory')
+} catch (error) {
+    console.error('Error cleaning up src/pages directory:', error)
 }
 
 // Verify files exist in root
