@@ -17,7 +17,7 @@ export default {
       }
     }
 
-    // Handle playlist routes
+    // Handle playlist routes - serve the template playlist.html
     if (url.pathname.startsWith('/playlist/')) {
       const playlistId = url.pathname.split('/')[2]
       // Validate UUID format
@@ -26,14 +26,24 @@ export default {
         return new Response('Invalid playlist ID format', { status: 400 })
       }
       
-      // For playlist routes, serve playlist.html
+      // Serve playlist.html template
       try {
         const response = await env.ASSETS.fetch(new Request(new URL('/playlist.html', url.origin)))
         if (!response.ok) {
           console.error('Failed to fetch playlist.html:', response.status)
           return new Response('Playlist page not found', { status: 404 })
         }
-        return response
+
+        // Get the HTML content
+        const html = await response.text()
+
+        // Return the template HTML - the JavaScript will handle loading the specific playlist data
+        return new Response(html, {
+          headers: {
+            'Content-Type': 'text/html',
+            'Cache-Control': 'no-cache'
+          }
+        })
       } catch (error) {
         console.error('Error fetching playlist.html:', error)
         return new Response('Internal Server Error', { status: 500 })
