@@ -24,6 +24,21 @@ export default {
         return new Response('Internal Server Error', { status: 500 })
       }
     }
+
+    // Handle playlists route
+    if (url.pathname === '/playlists') {
+      try {
+        const playlistsResponse = await env.ASSETS.fetch(new Request(new URL('/playlists.html', url.origin)))
+        if (!playlistsResponse.ok) {
+          console.error('Failed to fetch playlists.html:', playlistsResponse.status)
+          return new Response('Playlists page not found', { status: 404 })
+        }
+        return playlistsResponse
+      } catch (error) {
+        console.error('Error fetching playlists.html:', error)
+        return new Response('Internal Server Error', { status: 500 })
+      }
+    }
     
     // Handle all other routes
     try {
