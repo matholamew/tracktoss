@@ -80,11 +80,9 @@ async function loadPlaylist(playlistId) {
 
         console.log('Playlist loaded:', playlist)
 
-        // Update expiry info
-        const expiryDate = new Date(playlist.expires_at)
-        const expiryInfo = document.getElementById('expiry-info')
-        expiryInfo.textContent = `Expires: ${expiryDate.toLocaleString()}`
-
+        // Update page title
+        document.title = `${playlist.name} - TrackToss`
+        
         // Load songs
         await loadSongs()
 
