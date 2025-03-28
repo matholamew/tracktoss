@@ -20,15 +20,26 @@ app.get('/playlist/:id', (req, res) => {
     }
     
     // Send the playlist page
-    res.sendFile(path.join(__dirname, 'dist', 'playlist.html'))
+    res.sendFile(path.join(__dirname, 'dist', 'playlist.html'), (err) => {
+        if (err) {
+            console.error('Error sending playlist.html:', err)
+            res.status(404).send('Playlist page not found')
+        }
+    })
 })
 
 // Handle all other routes by serving index.html
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'), (err) => {
+        if (err) {
+            console.error('Error sending index.html:', err)
+            res.status(404).send('Page not found')
+        }
+    })
 })
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
+    console.log(`Serving files from: ${path.join(__dirname, 'dist')}`)
 }) 
