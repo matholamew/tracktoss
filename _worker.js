@@ -37,11 +37,13 @@ export default {
         // Get the HTML content
         const html = await response.text()
 
-        // Return the template HTML - the JavaScript will handle loading the specific playlist data
+        // Return the template HTML with proper headers
         return new Response(html, {
           headers: {
             'Content-Type': 'text/html',
-            'Cache-Control': 'no-cache'
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
           }
         })
       } catch (error) {
