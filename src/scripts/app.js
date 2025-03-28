@@ -30,6 +30,7 @@ searchInput.addEventListener('input', debounce(handleSearch, 300))
 
 let scanner = null
 let scannerStream = null
+let animationFrame = null
 
 // Debounce function for search input
 function debounce(func, wait) {
@@ -143,15 +144,15 @@ window.handleSongSelect = async function(songId, title, artist, service) {
 }
 
 function handleCloseScanner() {
-  if (scanner) {
-    scanner.stop();
-    scanner = null;
+  if (animationFrame) {
+    cancelAnimationFrame(animationFrame)
+    animationFrame = null
   }
   if (scannerStream) {
-    scannerStream.getTracks().forEach(track => track.stop());
-    scannerStream = null;
+    scannerStream.getTracks().forEach(track => track.stop())
+    scannerStream = null
   }
-  scannerContainer.classList.add('hidden');
+  scannerContainer.classList.add('hidden')
 }
 
 async function handlePlaylistJoin(playlistId) {
@@ -407,51 +408,68 @@ window.handleDownvote = handleDownvote
 
 async function handleStartScanner() {
   try {
-    // Request camera access first
+    // Request camera access
     scannerStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: 'environment' }
-    });
+    })
     
     // Set the video source
-    videoElement.srcObject = scannerStream;
+    videoElement.srcObject = scannerStream
     
     // Wait for video to be ready
     await new Promise((resolve) => {
       videoElement.onloadedmetadata = () => {
-        videoElement.play();
-        resolve();
-      };
-    });
+        videoElement.play()
+        resolve()
+      }
+    })
 
-    // Create new scanner instance after video is ready
-    scanner = new Instascan.Scanner({
-      video: videoElement,
-      scanPeriod: 5,
-      mirror: false
-    });
-
-    // Add scan listener
-    scanner.addListener('scan', function(content) {
-      console.log('QR Code detected:', content);
-      // Stop scanning
-      handleCloseScanner();
+    // Create canvas for QR code scanning
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    
+    // Start scanning loop
+    function scan() {
+      if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
+        // Set canvas size to match video
+        canvas.width = videoElement.videoWidth
+        canvas.height = videoElement.videoHeight
+        
+        // Draw video frame to canvas
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height)
+        
+        // Get image data from canvas
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+        
+        // Scan for QR code
+        const code = jsQR(imageData.data, imageData.width, imageData.height)
+        
+        if (code) {
+          console.log('QR Code detected:', code.data)
+          // Stop scanning
+          handleCloseScanner()
+          
+          // Extract playlist ID from URL
+          const playlistId = code.data.split('/').pop()
+          handlePlaylistJoin(playlistId)
+        }
+      }
       
-      // Extract playlist ID from URL
-      const playlistId = content.split('/').pop();
-      handlePlaylistJoin(playlistId);
-    });
-
+      // Continue scanning
+      animationFrame = requestAnimationFrame(scan)
+    }
+    
     // Start scanning
-    await scanner.start();
-    scannerContainer.classList.remove('hidden');
+    scan()
+    scannerContainer.classList.remove('hidden')
   } catch (error) {
-    console.error('Error starting scanner:', error);
+    console.error('Error starting scanner:', error)
     if (error.name === 'NotAllowedError') {
-      alert('Camera access was denied. Please allow camera access in your browser settings.');
+      alert('Camera access was denied. Please allow camera access in your browser settings.')
     } else if (error.name === 'NotFoundError') {
-      alert('No camera found. Please make sure your device has a camera.');
+      alert('No camera found. Please make sure your device has a camera.')
     } else {
-      alert('Unable to start camera. Please try again or refresh the page.');
+      alert('Unable to start camera. Please try again or refresh the page.')
     }
   }
 } 
