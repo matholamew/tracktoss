@@ -5,11 +5,12 @@ import autoprefixer from 'autoprefixer'
 
 export default defineConfig({
   server: {
-    port: 5173,
+    port: 3000,
+    open: true,
     strictPort: true,
     historyApiFallback: {
       rewrites: [
-        { from: /^\/playlist\/.*/, to: '/src/playlist/playlist.html' }
+        { from: /^\/playlist\/.*/, to: '/src/pages/playlist.html' }
       ]
     }
   },
@@ -19,6 +20,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
+        playlist: resolve(__dirname, 'src/pages/playlist.html')
       },
       external: ['qrcode-generator', 'instascan']
     },

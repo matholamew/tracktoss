@@ -3,7 +3,7 @@ import { musicService } from './music-services.js'
 
 console.log('Playlist.js loaded')
 
-// Get playlist ID from URL path
+// Get playlist ID from URL
 const pathParts = window.location.pathname.split('/')
 const playlistId = pathParts[pathParts.length - 1]
 console.log('Playlist ID:', playlistId)
@@ -51,9 +51,10 @@ function debounce(func, wait) {
 // Show loading state
 document.getElementById('playlist').innerHTML = '<div class="loading">Loading playlist...</div>'
 
+// Initialize playlist
 if (!playlistId) {
     console.error('No playlist ID provided')
-    document.getElementById('playlist').innerHTML = '<div class="error">No playlist ID provided</div>'
+    showError('No playlist ID provided')
 } else {
     loadPlaylist(playlistId)
 }
@@ -89,7 +90,7 @@ async function loadPlaylist(playlistId) {
 
     } catch (error) {
         console.error('Error loading playlist:', error)
-        document.getElementById('playlist').innerHTML = `<div class="error">Error loading playlist: ${error.message}</div>`
+        showError('Error loading playlist: ' + error.message)
     }
 }
 
