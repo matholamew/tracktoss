@@ -17,22 +17,6 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         playlist: resolve(__dirname, 'src/pages/playlist.html'),
         playlists: resolve(__dirname, 'src/pages/playlists.html')
-      },
-      output: {
-        entryFileNames: 'assets/[name]-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: ({ name }) => {
-          if (/\.(gif|jpe?g|png|svg)$/.test(name ?? '')) {
-            return 'assets/images/[name]-[hash][extname]'
-          }
-          if (/\.css$/.test(name ?? '')) {
-            return 'assets/[name]-[hash][extname]'
-          }
-          if (/\.html$/.test(name ?? '')) {
-            return '[name][extname]'
-          }
-          return 'assets/[name]-[hash][extname]'
-        }
       }
     },
     copyPublicDir: true,
