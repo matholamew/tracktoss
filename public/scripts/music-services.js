@@ -1,5 +1,5 @@
-import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_CLIENT_ID } from '/src/config.js'
-import config from '/src/config.js'
+import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_CLIENT_ID } from './config.js'
+import config from './config.js'
 
 // Spotify API Configuration
 const SPOTIFY_REDIRECT_URI = config.SPOTIFY_REDIRECT_URI;
