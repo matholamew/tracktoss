@@ -19,8 +19,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-      },
-      external: ['@supabase/supabase-js']
+      }
     },
     copyPublicDir: true
   },
@@ -37,9 +36,6 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
       '@scripts': resolve(__dirname, 'src/scripts')
     }
-  },
-  optimizeDeps: {
-    exclude: ['@supabase/supabase-js']
   },
   publicDir: 'public',
   base: '/'
