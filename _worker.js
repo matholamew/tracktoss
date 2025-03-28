@@ -37,13 +37,14 @@ export default {
         // Get the HTML content
         const html = await response.text()
 
-        // Return the template HTML with proper headers
+        // Return the template HTML with proper headers and cache control
         return new Response(html, {
           headers: {
             'Content-Type': 'text/html',
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
-            'Expires': '0'
+            'Expires': '0',
+            'X-Playlist-ID': playlistId // Add playlist ID to headers for debugging
           }
         })
       } catch (error) {
