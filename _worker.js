@@ -50,6 +50,21 @@ export default {
       }
     }
     
+    // Handle asset requests
+    if (url.pathname.startsWith('/assets/')) {
+      try {
+        const response = await env.ASSETS.fetch(request)
+        if (!response.ok) {
+          console.error('Failed to fetch asset:', response.status, request.url)
+          return new Response('Asset not found', { status: 404 })
+        }
+        return response
+      } catch (error) {
+        console.error('Error fetching asset:', error)
+        return new Response('Internal Server Error', { status: 500 })
+      }
+    }
+    
     // Handle all other routes
     try {
       // First try to fetch the exact path

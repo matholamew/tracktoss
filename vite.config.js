@@ -21,7 +21,8 @@ export default defineConfig({
     },
     copyPublicDir: true,
     emptyOutDir: true,
-    sourcemap: true
+    sourcemap: true,
+    assetsInlineLimit: 4096
   },
   css: {
     postcss: {
