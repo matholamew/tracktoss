@@ -34,13 +34,12 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '@scripts': resolve(__dirname, 'public/scripts')
+      '@': resolve(__dirname, 'src')
     }
   },
   optimizeDeps: {
     exclude: ['@supabase/supabase-js']
   },
   publicDir: 'public',
-  base: '/'
+  base: './'
 }) 
