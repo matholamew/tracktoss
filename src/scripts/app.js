@@ -408,22 +408,18 @@ window.handleDownvote = handleDownvote
 
 async function handleStartScanner() {
   try {
-    // Request camera access
+    // Request camera access with simpler configuration
     scannerStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }
+      video: {
+        facingMode: 'environment',
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }
     })
     
     // Set the video source
     videoElement.srcObject = scannerStream
     
-    // Wait for video to be ready
-    await new Promise((resolve) => {
-      videoElement.onloadedmetadata = () => {
-        videoElement.play()
-        resolve()
-      }
-    })
-
     // Create canvas for QR code scanning
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')
