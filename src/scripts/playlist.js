@@ -35,6 +35,22 @@ closeSearchModalBtn.addEventListener('click', () => {
 
 searchInput.addEventListener('input', debounce(handleSearch, 300))
 
+// Listen for global events
+window.addEventListener('handleSongSelect', (event) => {
+    const { songId, title, artist, service } = event.detail
+    handleSongSelect(songId, title, artist, service)
+})
+
+window.addEventListener('handleUpvote', (event) => {
+    const { songId } = event.detail
+    handleUpvote(songId)
+})
+
+window.addEventListener('handleDownvote', (event) => {
+    const { songId } = event.detail
+    handleDownvote(songId)
+})
+
 // Debounce function for search input
 function debounce(func, wait) {
     let timeout
@@ -198,48 +214,39 @@ async function handleSearch() {
                         </div>
                         <p class="text-sm text-gray-500 truncate">${song.artist}</p>
                     </div>
-                    <div class="flex-shrink-0">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </div>
                 </div>
             </div>
         `).join('')
     } catch (error) {
-        console.error('Search error:', error)
-        noResults.classList.remove('hidden')
+        console.error('Error searching songs:', error)
+        showError('Failed to search songs')
     } finally {
         searchLoading.classList.add('hidden')
     }
 }
 
 // Handle song selection
-window.handleSongSelect = async function(songId, title, artist, service) {
+async function handleSongSelect(songId, title, artist, service) {
     try {
-        const { data: song, error } = await supabase
+        const { error } = await supabase
             .from('songs')
             .insert([
                 {
-                    playlist_id: playlistId,
+                    id: songId,
                     title,
                     artist,
                     service,
-                    external_id: songId,
+                    playlist_id: playlistId,
                     upvotes: 0,
                     downvotes: 0
                 }
             ])
-            .select()
-            .single()
 
         if (error) throw error
 
-        // Close search modal
+        // Close modal and reload songs
         searchModal.classList.add('hidden')
         searchInput.value = ''
-        
-        // Reload songs list
         await loadSongs()
     } catch (error) {
         console.error('Error adding song:', error)
@@ -248,11 +255,15 @@ window.handleSongSelect = async function(songId, title, artist, service) {
 }
 
 // Handle upvote
-window.handleUpvote = async function(songId) {
+async function handleUpvote(songId) {
     try {
-        const { error } = await supabase.rpc('upvote_song', { song_id: songId })
+        const { error } = await supabase
+            .from('songs')
+            .update({ upvotes: supabase.raw('upvotes + 1') })
+            .eq('id', songId)
+
         if (error) throw error
-        
+
         // Reload songs to update order
         await loadSongs()
     } catch (error) {
@@ -262,11 +273,15 @@ window.handleUpvote = async function(songId) {
 }
 
 // Handle downvote
-window.handleDownvote = async function(songId) {
+async function handleDownvote(songId) {
     try {
-        const { error } = await supabase.rpc('downvote_song', { song_id: songId })
+        const { error } = await supabase
+            .from('songs')
+            .update({ downvotes: supabase.raw('downvotes + 1') })
+            .eq('id', songId)
+
         if (error) throw error
-        
+
         // Reload songs to update order
         await loadSongs()
     } catch (error) {
@@ -277,7 +292,22 @@ window.handleDownvote = async function(songId) {
 
 // Show error message
 function showError(message) {
-    alert(message)
+    const errorDiv = document.createElement('div')
+    errorDiv.className = 'fixed top-4 left-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'
+    errorDiv.innerHTML = `
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm">${message}</p>
+            </div>
+        </div>
+    `
+    document.body.appendChild(errorDiv)
+    setTimeout(() => errorDiv.remove(), 5000)
 }
 
 // Subscribe to real-time updates
