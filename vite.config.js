@@ -42,5 +42,5 @@ export default defineConfig({
     exclude: ['@supabase/supabase-js']
   },
   publicDir: 'public',
-  base: './'
+  base: '/'
 }) 
