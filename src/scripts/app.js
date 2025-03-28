@@ -415,6 +415,55 @@ async function handleStartScanner() {
     
     // Set the video source
     videoElement.srcObject = scannerStream
+    
+    // Create canvas for QR code scanning
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    
+    // Start scanning loop
+    function scan() {
+      if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
+        // Set canvas size to match video
+        canvas.width = videoElement.videoWidth
+        canvas.height = videoElement.videoHeight
+        
+        // Draw video frame to canvas
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height)
+        
+        // Get image data from canvas
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+        
+        // Scan for QR code using jsQR
+        const code = jsQR(imageData.data, imageData.width, imageData.height)
+        
+        if (code) {
+          console.log('QR Code detected:', code.data)
+          
+          // Try to parse the URL
+          try {
+            const url = new URL(code.data)
+            // Extract playlist ID from the path
+            const playlistId = url.pathname.split('/').pop()
+            
+            if (playlistId) {
+              console.log('Found playlist ID:', playlistId)
+              // Stop scanning
+              handleCloseScanner()
+              // Navigate to the playlist
+              window.location.href = `/playlist/${playlistId}`
+            }
+          } catch (error) {
+            console.error('Invalid QR code URL:', error)
+          }
+        }
+      }
+      
+      // Continue scanning
+      animationFrame = requestAnimationFrame(scan)
+    }
+    
+    // Start scanning
+    scan()
     scannerContainer.classList.remove('hidden')
   } catch (error) {
     console.error('Error starting scanner:', error)
