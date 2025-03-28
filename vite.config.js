@@ -19,7 +19,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-      }
+      },
+      external: ['qrcode-generator']
     },
     copyPublicDir: true
   },

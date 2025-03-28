@@ -1,6 +1,5 @@
 import { supabase } from './supabase-client.js'
 import { musicService } from './music-services.js'
-import qrcode from 'qrcode-generator'
 
 // Global variables
 let currentPlaylistId = null
